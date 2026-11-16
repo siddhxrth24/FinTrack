@@ -27,18 +27,30 @@ const DEFAULT_BUDGETS = {
   health: 2000, entertainment: 3000, education: 2000, rent: 15000, other_ex: 2000,
 };
 
-const SAMPLE_DATA = [
-  { id: '1', name: 'Monthly Salary', amount: 75000, type: 'income', category: 'salary', date: '2024-01-01' },
-  { id: '2', name: 'Swiggy Order', amount: 650, type: 'expense', category: 'food', date: '2024-01-03' },
-  { id: '3', name: 'Metro Card Recharge', amount: 500, type: 'expense', category: 'transport', date: '2024-01-04' },
-  { id: '4', name: 'Amazon Order', amount: 2300, type: 'expense', category: 'shopping', date: '2024-01-05' },
-  { id: '5', name: 'Freelance Project', amount: 12000, type: 'income', category: 'freelance', date: '2024-01-07' },
-  { id: '6', name: 'Electricity Bill', amount: 1800, type: 'expense', category: 'bills', date: '2024-01-08' },
-  { id: '7', name: 'Gym Membership', amount: 2000, type: 'expense', category: 'health', date: '2024-01-10' },
-  { id: '8', name: 'Netflix + Hotstar', amount: 799, type: 'expense', category: 'entertainment', date: '2024-01-11' },
-  { id: '9', name: 'Udemy Course', amount: 999, type: 'expense', category: 'education', date: '2024-01-12' },
-  { id: '10', name: 'House Rent', amount: 18000, type: 'expense', category: 'rent', date: '2024-01-01' },
-];
+// Load data from backend
+// Load data from backend
+const fetchData = async (token) => {
+  if (!token) return { transactions: [], categories: [], budgets: [] };
+  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+  try {
+    const [txRes, catRes, budRes] = await Promise.all([
+      fetch('/api/transactions', { headers }),
+      fetch('/api/categories', { headers }),
+      fetch('/api/budgets', { headers })
+    ]);
+    const [transactions, categories, budgets] = await Promise.all([
+      txRes.ok ? txRes.json() : [],
+      catRes.ok ? catRes.json() : [],
+      budRes.ok ? budRes.json() : []
+    ]);
+    return { transactions, categories, budgets };
+  } catch (e) {
+    console.error('Data fetch error', e);
+    return { transactions: [], categories: [], budgets: [] };
+  }
+};
+
+const SAMPLE_DATA = []; // placeholder, data loaded via fetchData
 
 // ── HELPERS ──
 const formatCurrency = (n) =>
